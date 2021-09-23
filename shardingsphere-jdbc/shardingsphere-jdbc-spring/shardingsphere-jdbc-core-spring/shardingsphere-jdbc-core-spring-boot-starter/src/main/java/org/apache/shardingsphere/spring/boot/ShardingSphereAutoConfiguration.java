@@ -62,13 +62,17 @@ import java.util.Optional;
 public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     
     private String schemaName;
-    
+
+    /**
+     * 自动映射配置文件内容，前缀：spring.shardingsphere.props
+     */
     private final SpringBootPropertiesConfiguration props;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     /**
      * Get mode configuration.
+     * 对应配置文件中的 spring.shardingsphere.mode
      *
      * @return mode configuration
      */
@@ -80,13 +84,13 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     /**
      * Get ShardingSphere data source bean.
      *
-     * @param rules rules configuration
+     * @param rules rules configuration  通过 ShardingRuleSpringBootConfiguration 实例化
      * @param modeConfig mode configuration
      * @return data source bean
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional(LocalRulesCondition.class)
+    @Conditional(LocalRulesCondition.class) // 判断配置文件是否存在 spring.shardingsphere.rules
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final ObjectProvider<ModeConfiguration> modeConfig) throws SQLException {
         Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
@@ -115,7 +119,11 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     public TransactionTypeScanner transactionTypeScanner() {
         return new TransactionTypeScanner();
     }
-    
+
+    /**
+     * 获取 application.properties 配置文件里的属性内容
+     * @param environment
+     */
     @Override
     public final void setEnvironment(final Environment environment) {
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));

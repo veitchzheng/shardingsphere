@@ -60,10 +60,13 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     @Override
     public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
+        // 把执行单元按是否是同一数据源分组，然后遍历每个组
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             String dataSourceName = entry.getKey();
             List<SQLUnit> sqlUnits = entry.getValue();
+            // 按照最大连接数分成一份一份的
             List<List<SQLUnit>> sqlUnitGroups = group(sqlUnits);
+            // 自动选择内存限制模式还是连接限制模式
             ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
             result.addAll(group(dataSourceName, sqlUnitGroups, connectionMode));
         }

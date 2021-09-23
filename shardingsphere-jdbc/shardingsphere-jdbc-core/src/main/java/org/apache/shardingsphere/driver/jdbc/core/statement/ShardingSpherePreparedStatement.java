@@ -195,6 +195,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             return rawExecutor.execute(createRawExecutionGroupContext(), executionContext.getLogicSQL(),
                     new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
+        // 从执行上下文拿到路由上下文，如果路由命中多个库，使用federateExecutor执行
         if (executionContext.getRouteContext().isFederated()) {
             return executeFederatedQuery();
         }

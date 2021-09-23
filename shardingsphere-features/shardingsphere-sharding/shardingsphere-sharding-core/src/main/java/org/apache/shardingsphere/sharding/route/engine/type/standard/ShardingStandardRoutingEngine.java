@@ -79,8 +79,10 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private RouteContext getRouteContext(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
+        // 根据逻辑表名拿到所有数据节点
         Collection<DataNode> dataNodes = getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName));
         result.getOriginalDataNodes().addAll(originalDataNodes);
+        // 设置逻辑表和真实表关系
         for (DataNode each : dataNodes) {
             result.getRouteUnits().add(
                     new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singleton(new RouteMapper(logicTableName, each.getTableName()))));

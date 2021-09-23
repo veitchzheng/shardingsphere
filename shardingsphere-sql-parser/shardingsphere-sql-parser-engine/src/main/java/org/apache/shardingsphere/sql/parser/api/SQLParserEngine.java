@@ -41,7 +41,7 @@ public final class SQLParserEngine {
     }
     
     /**
-     * Parse SQL.
+     * Parse SQL. 解析为抽象语法树
      *
      * @param sql SQL to be parsed
      * @param useCache whether use cache
